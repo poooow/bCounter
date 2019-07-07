@@ -1,7 +1,9 @@
 import React from 'react';
-import {StyleSheet, Text, View, TextInput, Alert, ScrollView, TouchableOpacity, AsyncStorage} from 'react-native';
+import {StyleSheet, Text, View, TextInput, Alert, ScrollView, TouchableOpacity, Linking, AsyncStorage} from 'react-native';
 import {BarChart, Grid} from 'react-native-svg-charts'
-import Swiper from 'react-native-swiper'
+import Swiper from 'react-native-swiper';
+import { MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
+
 
 class bCounter extends React.Component {
 
@@ -125,6 +127,7 @@ class bCounter extends React.Component {
         const fill = '#cccccc';
 
         return (
+            <MenuProvider>
             <Swiper
                 loop={false}
                 index={0}
@@ -184,11 +187,40 @@ class bCounter extends React.Component {
                     </View>
                 </View>
             </Swiper>
+                <View style={styles.menu}>
+                    <Menu>
+                      <MenuTrigger>
+                          <Text style={styles.menuTrigger}>&#x2630;</Text>
+                      </MenuTrigger>
+                      <MenuOptions>
+                        <MenuOption onSelect={() => Linking.openURL('https://github.com/poooow/bCounter/blob/master/privacy_policy.md')}>
+                            <Text style={styles.menuItem}>Privacy Policy</Text>
+                        </MenuOption>
+                      </MenuOptions>
+                    </Menu>
+                </View>
+            </MenuProvider>
         );
     }
 }
 
 const styles = StyleSheet.create({
+    menu: {
+        position: 'absolute',
+        right: 10,
+        top: 10,
+    },
+    menuTrigger: {
+        color: '#cccccc',
+        fontSize: 30,
+    },
+    menuItem: {
+        paddingLeft: 10,
+        paddingTop: 5,
+        paddingBottom: 5,
+        fontSize: 20,
+        color: '#555555',
+    },
     container: {
         backgroundColor: '#fff',
     },
