@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "Simple Beer Counter",
+    "slug": "bCounter",
+    "privacy": "public",
+    "sdkVersion": "33.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false
+    },
+    "description": "",
+    "androidStatusBar": {
+      "backgroundColor": "#ffffff",
+      "barStyle": "dark-content"
+    },
+    "primaryColor": "#cccccc",
+    "android": {
+      "package": "com.pow.bcounter",
+      "versionCode": 3,
+      "permissions": [],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon-fg.png",
+        "backgroundColor": "#f8c002",
+        "backgroundImage": "./assets/icon-bg.png"
+      }
+    }
+  }
+}
