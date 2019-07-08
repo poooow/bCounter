@@ -2,24 +2,32 @@ import React from 'react';
 import {StyleSheet, Text, View, TextInput, Alert, ScrollView, TouchableOpacity, Linking, AsyncStorage} from 'react-native';
 import {BarChart, Grid} from 'react-native-svg-charts'
 import Swiper from 'react-native-swiper';
-import { MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
+import {MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger} from 'react-native-popup-menu';
+import update from 'immutability-helper';
 
 
 class bCounter extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {
+
+        this.emptyPerson = {
             count: 0,
             beers: [],
-            beerName: 'Beer',
-            sysLog: '',
+            name: 'Beer',
+            icon: 0x1f37a,
             graph: [0],
         };
+
+        this.state = {
+            persons: [],
+            currentPerson: 0,
+        };
+
         this.retrieveData();
+        if (this.state.persons.length === 0) this.state.persons.push(this.emptyPerson);
         this.updateGraph();
         this.drinks = [['beer', 0x1f37a], ['wine', 0x1f377], ['cocktail', 0x1f378], ['shot', 0x1f943], ['coffee', 0x2615], ['milk', 0x1f95b]];
-        this.drinkIcon = 0x1f37a;
     }
 
     static timestampToTime(timestamp) {
@@ -33,13 +41,20 @@ class bCounter extends React.Component {
     updateGraph = () => {
         let graph = [];
 
-        for (let i = 1; i < this.state.beers.length; i++) {
-            graph.push(this.state.beers[i].time - this.state.beers[i - 1].time);
+        for (let i = 1; i < this.state.persons[this.state.currentPerson].beers.length; i++) {
+            graph.push(this.state.persons[this.state.currentPerson].beers[i].time - this.state.persons[this.state.currentPerson].beers[i - 1].time);
         }
+
+        const persons = update(this.state.persons, {
+            [this.state.currentPerson]: {
+                graph: {$set: graph},
+            }
+        });
+
 
         if (graph.length) {
             this.setState({
-                    graph: graph,
+                    persons: persons,
                 }
             );
         }
@@ -47,7 +62,7 @@ class bCounter extends React.Component {
 
     storeData = async () => {
         try {
-            await AsyncStorage.setItem('STORAGE_KEY', JSON.stringify(this.state.beers));
+            await AsyncStorage.setItem('STORAGE_KEY', JSON.stringify(this.state));
         } catch (error) {
             console.log(error);
         }
@@ -58,10 +73,7 @@ class bCounter extends React.Component {
             const value = await AsyncStorage.getItem('STORAGE_KEY');
             if (value !== null) {
                 const state = JSON.parse(value);
-                this.setState({
-                    beers: state,
-                    count: state.length,
-                });
+                this.setState(state);
             }
         } catch (error) {
             console.log(error);
@@ -69,31 +81,43 @@ class bCounter extends React.Component {
     };
 
     setDrinkName = (drinkName) => {
+        let drinkIcon = this.state.persons[this.state.currentPerson].icon;
         for (let index = 0; index < this.drinks.length; ++index) {
             let value = this.drinks[index];
             if (value[0].localeCompare(drinkName.toLowerCase()) === 0) {
-                this.drinkIcon = value[1];
+                drinkIcon = value[1];
             }
         }
 
+        const persons = update(this.state.persons, {
+            [this.state.currentPerson]: {
+                name: {$set: drinkName},
+                icon: {$set: drinkIcon}
+            }
+        });
+
         this.setState({
-            beerName: drinkName,
+            persons
         })
     };
 
     increment = () => {
         const currentTime = Date.now();
 
-        const beerName = this.state.beerName;
+        const name = this.state.persons[this.state.currentPerson].name;
 
-        const newState = {'name': beerName, 'time': currentTime};
+        const newBeerState = {'name': name, 'time': currentTime};
 
-        this.setState(state => {
-            const beers = state.beers.concat(newState);
-            return {
-                beers,
-                count: this.state.count + 1,
+        const persons = update(this.state.persons, {
+            [this.state.currentPerson]: {
+                count: {$set: this.state.persons[this.state.currentPerson].count + 1},
+                beers: {$push: [newBeerState]},
             }
+        });
+
+        this.setState({
+            persons
+
         }, () => {
             this.storeData();
             this.updateGraph();
@@ -101,14 +125,20 @@ class bCounter extends React.Component {
     };
 
     decrement = () => {
-        if (this.state.count < 1) return;
-        this.setState(state => {
-            const beers = state.beers;
-            beers.pop();
-            return {
-                beers: beers,
-                count: this.state.count - 1,
+
+        if (this.state.persons[this.state.currentPerson].count < 1) return;
+
+        this.state.persons[this.state.currentPerson].beers.pop();
+
+        const persons = update(this.state.persons, {
+            [this.state.currentPerson]: {
+                count: {$set: this.state.persons[this.state.currentPerson].count - 1},
+                beers: {$set: this.state.persons[this.state.currentPerson].beers}
             }
+        });
+
+        this.setState({
+            persons: persons,
         }, () => {
             this.storeData();
             this.updateGraph();
@@ -116,87 +146,138 @@ class bCounter extends React.Component {
     };
 
     clear = () => {
+        const persons = update(this.state.persons, {
+            [this.state.currentPerson]: {
+                count: {$set: 0},
+                beers: {$set: []},
+                graph: {$set: [0]}
+            }
+        });
+
         this.setState({
-            count: 0,
-            beers: [],
-            graph: [0],
+            persons
         });
     };
 
-    render() {
+    setCurrentPerson(person) {
+
+        this.setState({
+            currentPerson: person,
+        });
+    };
+
+    newPerson = () => {
+        const persons = update(this.state.persons, {$push: [this.emptyPerson]});
+
+        this.setState({
+            persons: persons,
+        });
+    };
+
+    deletePerson = () => {
+        let persons = this.state.persons;
+        const filteredPersons = persons.slice(0, this.state.currentPerson).concat(persons.slice(this.state.currentPerson + 1, persons.length));
+
+        this.setState({
+            persons: filteredPersons,
+        });
+    };
+
+
+    personView(person) {
         const fill = '#cccccc';
 
         return (
-            <MenuProvider>
-            <Swiper
-                loop={false}
-                index={0}
-                dot={<View style={{backgroundColor:'rgba(0,0,0,.1)', width: 8, height: 8,borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 3, marginBottom: 3,}} />}
-                activeDot={<View style={{backgroundColor: 'rgba(0,0,0,.3)', width: 8, height: 8, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 3, marginBottom: 3,}} />}
-            >
-                <View style={styles.container}>
-                    <View style={styles.content}>
-                        <TextInput
-                            style={styles.input}
-                            onChangeText={this.setDrinkName}
-                            value={this.state.beerName}
-                        />
-                        <Text style={styles.counter}>{this.state.count} {String.fromCodePoint(this.drinkIcon)}</Text>
-                        <View style={styles.buttons}>
-                            <TouchableOpacity onPress={this.increment}>
-                                <Text style={styles.button}>+</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={this.decrement}>
-                                <Text style={styles.buttonMinus}>-</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity>
-                                <Text
-                                    style={styles.buttonClear}
-                                    onPress={
-                                        () => Alert.alert(
-                                            "What!", "No more beers?",
-                                            [
-                                                {
-                                                    text: 'Cancel',
-                                                    style: 'cancel'
-                                                },
-                                                {text: 'Clear', onPress: this.clear},
-                                            ],
-                                            {cancelable: true}
-                                        )}
-                                >&#x1F5D1;</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={styles.stats}>
-                            <ScrollView style={styles.log}>
-                                <Text>
-                                    {this.state.beers.map((beer, index) => (
-                                        <Text style={styles.logItem} key={index}>{beer.name} @ {bCounter.timestampToTime(beer.time)}{'\n'}</Text>
-                                    ))}
-                                </Text>
-                            </ScrollView>
-                            <BarChart
-                                style={styles.graph}
-                                data={this.state.graph}
-                                svg={{fill}}
-                                yMin={0}
-                            >
-                                <Grid/>
-                            </BarChart>
-                        </View>
+            <View key={person} style={styles.container}>
+                <View style={styles.content}>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={this.setDrinkName}
+                        value={this.state.persons[person].name}
+                    />
+                    <Text style={styles.counter}>{this.state.persons[person].count} {String.fromCodePoint(this.state.persons[person].icon)}</Text>
+                    <View style={styles.buttons}>
+                        <TouchableOpacity onPress={this.increment}>
+                            <Text style={styles.button}>+</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={this.decrement}>
+                            <Text style={styles.buttonMinus}>-</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity>
+                            <Text
+                                style={styles.buttonClear}
+                                onPress={
+                                    () => Alert.alert(
+                                        "What!", "No more beers?",
+                                        [
+                                            {
+                                                text: 'Cancel',
+                                                style: 'cancel'
+                                            },
+                                            {text: 'Clear', onPress: this.clear},
+                                        ],
+                                        {cancelable: true}
+                                    )}
+                            >&#x1F5D1;</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={styles.stats}>
+                        <ScrollView style={styles.log}>
+                            <Text>
+                                {this.state.persons[person].beers.map((beer, index) => (
+                                    <Text style={styles.logItem} key={index}>{beer.name} @ {bCounter.timestampToTime(beer.time)}{'\n'}</Text>
+                                ))}
+                            </Text>
+                        </ScrollView>
+                        <BarChart
+                            style={styles.graph}
+                            data={this.state.persons[person].graph}
+                            svg={{fill}}
+                            yMin={0}
+                        >
+                            <Grid/>
+                        </BarChart>
                     </View>
                 </View>
-            </Swiper>
+            </View>
+        );
+    }
+
+    render() {
+        let personView = [];
+
+        for (let i = 0; i < this.state.persons.length; i++) {
+            personView.push(this.personView(i));
+        }
+
+        const lastSwipe = (<View key={999} style={styles.lastSwipe}><Text onPress={this.newPerson} style={styles.lastSwipeText}>+</Text></View>);
+
+        personView.push(lastSwipe);
+
+        return (
+            <MenuProvider>
+                <Swiper
+                    loop={false}
+                    index={this.state.currentPerson}
+                    dot={<View style={{backgroundColor: 'rgba(0,0,0,.1)', width: 8, height: 8, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 3, marginBottom: 3,}}/>}
+                    activeDot={<View style={{backgroundColor: 'rgba(0,0,0,.3)', width: 8, height: 8, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 3, marginBottom: 3,}}/>}
+                    onIndexChanged={(index) => this.setCurrentPerson(index)}
+                >
+                    {personView}
+                </Swiper>
                 <View style={styles.menu}>
                     <Menu>
-                      <MenuTrigger>
-                          <Text style={styles.menuTrigger}>&#x2630;</Text>
-                      </MenuTrigger>
-                      <MenuOptions>
-                        <MenuOption onSelect={() => Linking.openURL('https://github.com/poooow/bCounter/blob/master/privacy_policy.md')}>
-                            <Text style={styles.menuItem}>Privacy Policy</Text>
-                        </MenuOption>
-                      </MenuOptions>
+                        <MenuTrigger>
+                            <Text style={styles.menuTrigger}>&#x2630;</Text>
+                        </MenuTrigger>
+                        <MenuOptions>
+                            <MenuOption onSelect={() => Linking.openURL('https://github.com/poooow/bCounter/blob/master/privacy_policy.md')}>
+                                <Text style={styles.menuItem}>Privacy Policy</Text>
+                            </MenuOption>
+                            <MenuOption onSelect={() => this.deletePerson()}>
+                                <Text style={styles.menuItem}>Delete</Text>
+                            </MenuOption>
+                        </MenuOptions>
                     </Menu>
                 </View>
             </MenuProvider>
@@ -207,7 +288,7 @@ class bCounter extends React.Component {
 const styles = StyleSheet.create({
     menu: {
         position: 'absolute',
-        right: 10,
+        right: 20,
         top: 10,
     },
     menuTrigger: {
@@ -218,7 +299,7 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         paddingTop: 5,
         paddingBottom: 5,
-        fontSize: 20,
+        fontSize: 15,
         color: '#555555',
     },
     container: {
@@ -284,7 +365,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     stats: {
-        marginTop: 80,
+        marginTop: 50,
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '90%',
@@ -301,6 +382,16 @@ const styles = StyleSheet.create({
         width: '40%',
         marginLeft: 20,
     },
+    lastSwipe: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+
+    },
+    lastSwipeText: {
+        fontSize: 150,
+        color: '#cccccc'
+    }
 });
 
 export default bCounter;
