@@ -41,6 +41,7 @@ class bCounter extends React.Component {
     updateGraph = () => {
         let graph = [];
 
+        // Generates array of time differences for graph
         for (let i = 1; i < this.state.persons[this.state.currentPerson].beers.length; i++) {
             graph.push(this.state.persons[this.state.currentPerson].beers[i].time - this.state.persons[this.state.currentPerson].beers[i - 1].time);
         }
@@ -50,7 +51,6 @@ class bCounter extends React.Component {
                 graph: {$set: graph},
             }
         });
-
 
         if (graph.length) {
             this.setState({
@@ -80,6 +80,9 @@ class bCounter extends React.Component {
         }
     };
 
+    /*
+     * Update drink name and icon if matches keyword
+     */
     setDrinkName = (drinkName) => {
         let drinkIcon = this.state.persons[this.state.currentPerson].icon;
         for (let index = 0; index < this.drinks.length; ++index) {
@@ -101,6 +104,9 @@ class bCounter extends React.Component {
         })
     };
 
+    /*
+     * Add drink for current person
+     */
     increment = () => {
         const currentTime = Date.now();
 
@@ -124,8 +130,12 @@ class bCounter extends React.Component {
         });
     };
 
+    /*
+     * Remove last drink for current person
+     */
     decrement = () => {
 
+        // Cant be less than 0 drinks
         if (this.state.persons[this.state.currentPerson].count < 1) return;
 
         this.state.persons[this.state.currentPerson].beers.pop();
@@ -145,6 +155,9 @@ class bCounter extends React.Component {
         });
     };
 
+    /*
+     * Clear all drinks of current person
+     */
     clear = () => {
         const persons = update(this.state.persons, {
             [this.state.currentPerson]: {
@@ -174,6 +187,9 @@ class bCounter extends React.Component {
         });
     };
 
+    /*
+     * Delete current person
+     */
     deletePerson = () => {
         let persons = this.state.persons;
         const filteredPersons = persons.slice(0, this.state.currentPerson).concat(persons.slice(this.state.currentPerson + 1, persons.length));
@@ -183,7 +199,9 @@ class bCounter extends React.Component {
         });
     };
 
-
+    /*
+     * Single slide
+     */
     personView(person) {
         const fill = '#cccccc';
 
@@ -246,12 +264,13 @@ class bCounter extends React.Component {
     render() {
         let personView = [];
 
+        // Fill up slidess Arary
         for (let i = 0; i < this.state.persons.length; i++) {
             personView.push(this.personView(i));
         }
 
+        // Last slide with add-person button
         const lastSwipe = (<View key={999} style={styles.lastSwipe}><Text onPress={this.newPerson} style={styles.lastSwipeText}>+</Text></View>);
-
         personView.push(lastSwipe);
 
         return (
@@ -268,14 +287,14 @@ class bCounter extends React.Component {
                 <View style={styles.menu}>
                     <Menu>
                         <MenuTrigger>
-                            <Text style={styles.menuTrigger}>&#x2630;</Text>
+                            <Text style={styles.menuTrigger}>&#x22EE;</Text>
                         </MenuTrigger>
                         <MenuOptions>
                             <MenuOption onSelect={() => Linking.openURL('https://github.com/poooow/bCounter/blob/master/privacy_policy.md')}>
-                                <Text style={styles.menuItem}>Privacy Policy</Text>
+                                <Text style={styles.menuItem}>Privacy policy</Text>
                             </MenuOption>
                             <MenuOption onSelect={() => this.deletePerson()}>
-                                <Text style={styles.menuItem}>Delete</Text>
+                                <Text style={styles.menuItem}>Delete counter</Text>
                             </MenuOption>
                         </MenuOptions>
                     </Menu>
@@ -288,12 +307,15 @@ class bCounter extends React.Component {
 const styles = StyleSheet.create({
     menu: {
         position: 'absolute',
-        right: 20,
+        right: 10,
         top: 10,
     },
     menuTrigger: {
         color: '#cccccc',
         fontSize: 30,
+        width: 40,
+        textAlign: 'center',
+        fontWeight: 'bold',
     },
     menuItem: {
         paddingLeft: 10,

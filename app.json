@@ -34,7 +34,7 @@
     "primaryColor": "#cccccc",
     "android": {
       "package": "com.pow.bcounter",
-      "versionCode": 3,
+      "versionCode": 5,
       "permissions": [],
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon-fg.png",
