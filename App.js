@@ -22,6 +22,7 @@ class bCounter extends React.Component {
         this.state = {
             persons: [],
             currentPerson: 0,
+            advancedMode: 0,
         };
 
         this.retrieveData();
@@ -110,7 +111,7 @@ class bCounter extends React.Component {
     increment = () => {
         const currentTime = Date.now();
 
-        const name = this.state.persons[this.state.currentPerson].name;
+        const name = String.fromCodePoint(this.state.persons[this.state.currentPerson].icon) + ' ' + this.state.persons[this.state.currentPerson].name;
 
         const newBeerState = {'name': name, 'time': currentTime};
 
@@ -200,6 +201,18 @@ class bCounter extends React.Component {
     };
 
     /*
+     * Toggle graph and log visibility
+     */
+    toggleMode = () => {
+
+        let newState = !this.state.advancedMode;
+
+        this.setState({
+            advancedMode: newState,
+        });
+    };
+
+    /*
      * Single slide
      */
     personView(person) {
@@ -239,6 +252,7 @@ class bCounter extends React.Component {
                             >&#x1F5D1;</Text>
                         </TouchableOpacity>
                     </View>
+                    {this.state.advancedMode ?
                     <View style={styles.stats}>
                         <ScrollView style={styles.log}>
                             <Text>
@@ -256,6 +270,7 @@ class bCounter extends React.Component {
                             <Grid/>
                         </BarChart>
                     </View>
+                    : null}
                 </View>
             </View>
         );
@@ -264,7 +279,7 @@ class bCounter extends React.Component {
     render() {
         let personView = [];
 
-        // Fill up slidess Arary
+        // Fill up slides Array
         for (let i = 0; i < this.state.persons.length; i++) {
             personView.push(this.personView(i));
         }
@@ -292,6 +307,9 @@ class bCounter extends React.Component {
                         <MenuOptions>
                             <MenuOption onSelect={() => Linking.openURL('https://github.com/poooow/bCounter/blob/master/privacy_policy.md')}>
                                 <Text style={styles.menuItem}>Privacy policy</Text>
+                            </MenuOption>
+                            <MenuOption onSelect={() => this.toggleMode()}>
+                                <Text style={styles.menuItem}>{this.state.advancedMode ? 'Disable' : 'Enable'} advanced mode</Text>
                             </MenuOption>
                             <MenuOption onSelect={() => this.deletePerson()}>
                                 <Text style={styles.menuItem}>Delete counter</Text>
@@ -402,6 +420,7 @@ const styles = StyleSheet.create({
     logItem: {
         fontSize: 15,
         color: '#cccccc',
+        lineHeight: 21,
     },
     graph: {
         height: 130,
