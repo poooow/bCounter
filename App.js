@@ -242,7 +242,7 @@ class bCounter extends React.Component {
      * Nick Name generator
      */
     static generateNickname(){
-        const nameFirst = ['anarchist', 'autocratic', 'feudal', 'communist', 'liberal', 'bureaucratic', 'religious', 'social', 'creative', 'technocratic', 'militant', 'imperial', 'capitalist', 'despotic', 'aristocratic', 'neutral', 'charismatic', 'technocratic', 'theocratic'];
+        const nameFirst = ['anarchist', 'autocratic', 'feudal', 'communist', 'liberal', 'bureaucratic', 'religious', 'social', 'creative', 'technocratic', 'militant', 'imperial', 'capitalist', 'despotic', 'aristocratic', 'neutral', 'charismatic', 'technocratic', 'theocratic', 'conservative', 'marxist', 'enlightened', 'feminist', 'skeptical', 'utilitarian'];
         const nameSecond = ['alligator', 'donkey', 'badger', 'beaver', 'bobkitten', 'capybara', 'chameleon', 'chicken', 'coyote', 'crocodile', 'unicorn', 'dinosaur', 'dragon', 'duck', 'elephant', 'fox', 'gecko', 'panda', 'giraffe', 'goat', 'gorilla', 'goose', 'hyena', 'jellyfish', 'kangaroo', 'koala', 'lizard', 'mammoth', 'monkey', 'mouse', 'octopus', 'parrot', 'penguin', 'pigeon', 'rabbit', 'skunk', 'squirrel', 'toad', 'whale', 'zebra'];
 
         return Utils.capitalizeFirstLetter(nameFirst[Utils.getRandomInt(0, nameFirst.length - 1)]) + ' ' + nameSecond[Utils.getRandomInt(0, nameSecond.length - 1)];
