@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-    StyleSheet,
     Text,
     View,
     TextInput,
@@ -14,6 +13,8 @@ import {BarChart, Grid} from 'react-native-svg-charts'
 import Swiper from 'react-native-swiper';
 import {MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger} from 'react-native-popup-menu';
 import update from 'immutability-helper';
+import styles from './styles.js';
+import * as Utils from './helpers.js';
 
 
 class bCounter extends React.Component {
@@ -42,17 +43,9 @@ class bCounter extends React.Component {
             name: 'Beer',
             icon: 0x1f37a,
             graph: [0],
-            counterName: this.generateNickname(),
+            counterName: bCounter.generateNickname(),
         };
     }
-
-    static timestampToTime(timestamp) {
-        let date = new Date(timestamp);
-        let hours = date.getHours();
-        let minutes = "0" + date.getMinutes();
-        let seconds = "0" + date.getSeconds();
-        return hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-    };
 
     updateGraph = () => {
         let graph = [];
@@ -248,20 +241,11 @@ class bCounter extends React.Component {
     /*
      * Nick Name generator
      */
-    capitalizeFirstLetter(string)
-    {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
-
-    getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min)) + min;
-    }
-
-    generateNickname(){
-        const nameFirst = ['anarchist', 'autocratic', 'democratic', 'feudal', 'communist', 'liberal', 'bureaucratic', 'religious', 'social', 'creative', 'technocratic', 'militant', 'imperial', 'capitalist', 'despotic', 'aristocratic', 'neutral', 'charismatic', 'technocratic', 'theocratic'];
+    static generateNickname(){
+        const nameFirst = ['anarchist', 'autocratic', 'feudal', 'communist', 'liberal', 'bureaucratic', 'religious', 'social', 'creative', 'technocratic', 'militant', 'imperial', 'capitalist', 'despotic', 'aristocratic', 'neutral', 'charismatic', 'technocratic', 'theocratic'];
         const nameSecond = ['alligator', 'donkey', 'badger', 'beaver', 'bobkitten', 'capybara', 'chameleon', 'chicken', 'coyote', 'crocodile', 'unicorn', 'dinosaur', 'dragon', 'duck', 'elephant', 'fox', 'gecko', 'panda', 'giraffe', 'goat', 'gorilla', 'goose', 'hyena', 'jellyfish', 'kangaroo', 'koala', 'lizard', 'mammoth', 'monkey', 'mouse', 'octopus', 'parrot', 'penguin', 'pigeon', 'rabbit', 'skunk', 'squirrel', 'toad', 'whale', 'zebra'];
 
-        return this.capitalizeFirstLetter(nameFirst[this.getRandomInt(0, nameFirst.length - 1)]) + ' ' + nameSecond[this.getRandomInt(0, nameSecond.length - 1)];
+        return Utils.capitalizeFirstLetter(nameFirst[Utils.getRandomInt(0, nameFirst.length - 1)]) + ' ' + nameSecond[Utils.getRandomInt(0, nameSecond.length - 1)];
     }
 
     /*
@@ -318,7 +302,7 @@ class bCounter extends React.Component {
                                 <Text>
                                     {this.state.persons[person].beers.map((beer, index) => (
                                         <Text style={styles.logItem}
-                                              key={index}>{beer.name} @ {bCounter.timestampToTime(beer.time)}{'\n'}</Text>
+                                              key={index}>{beer.name} @ {Utils.timestampToTime(beer.time)}{'\n'}</Text>
                                     ))}
                                 </Text>
                             </ScrollView>
@@ -403,128 +387,5 @@ class bCounter extends React.Component {
         );
     }
 }
-
-const styles = StyleSheet.create({
-    menu: {
-        position: 'absolute',
-        right: 10,
-        top: 10,
-    },
-    menuTrigger: {
-        color: '#cccccc',
-        fontSize: 30,
-        width: 40,
-        textAlign: 'center',
-        fontWeight: 'bold',
-    },
-    menuItem: {
-        paddingLeft: 10,
-        paddingTop: 5,
-        paddingBottom: 5,
-        fontSize: 15,
-        color: '#555555',
-    },
-    container: {
-        backgroundColor: '#fff',
-    },
-    content: {
-        backgroundColor: '#fff',
-        alignItems: 'center',
-    },
-    drinkNameInput: {
-        fontSize: 40,
-        color: '#cccccc',
-        marginTop: 130,
-        marginBottom: 50,
-    },
-    counterNameInput: {
-        position: 'absolute',
-        top: 50,
-        fontSize: 30,
-        color: '#cccccc',
-    },
-    counter: {
-        textAlign: 'center',
-        fontSize: 80,
-        marginBottom: 60,
-    },
-    buttons: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-    },
-    button: {
-        backgroundColor: '#555555',
-        borderColor: '#555555',
-        borderWidth: 2,
-        color: 'white',
-        width: 75,
-        height: 75,
-        padding: 4,
-        margin: 5,
-        borderRadius: 100,
-        fontSize: 45,
-        fontWeight: 'bold',
-        overflow: 'hidden',
-        textAlign: 'center',
-    },
-    buttonMinus: {
-        backgroundColor: 'white',
-        borderColor: '#555555',
-        borderWidth: 2,
-        color: '#555555',
-        width: 75,
-        height: 75,
-        padding: 4,
-        margin: 5,
-        borderRadius: 100,
-        fontSize: 45,
-        fontWeight: 'bold',
-        overflow: 'hidden',
-        textAlign: 'center',
-    },
-    buttonClear: {
-        backgroundColor: 'white',
-        borderColor: '#555555',
-        borderWidth: 2,
-        width: 75,
-        height: 75,
-        padding: 11,
-        margin: 5,
-        borderRadius: 100,
-        fontSize: 35,
-        fontWeight: 'bold',
-        overflow: 'hidden',
-        textAlign: 'center',
-    },
-    stats: {
-        marginTop: 50,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '90%',
-    },
-    log: {
-        height: 130,
-    },
-    logItem: {
-        fontSize: 15,
-        color: '#cccccc',
-        lineHeight: 21,
-    },
-    graph: {
-        height: 130,
-        width: '40%',
-        marginLeft: 20,
-    },
-    lastSwipe: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        flex: 1,
-
-    },
-    lastSwipeText: {
-        fontSize: 150,
-        color: '#cccccc'
-    }
-});
 
 export default bCounter;
