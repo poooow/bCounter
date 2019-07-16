@@ -1,5 +1,9 @@
 import {StyleSheet} from "react-native";
 
+const textColor = '#555555';
+const textColorLight = '#cccccc';
+const backgroundColor = '#ffffff';
+
 export default StyleSheet.create({
     menu: {
         position: 'absolute',
@@ -7,7 +11,7 @@ export default StyleSheet.create({
         top: 10,
     },
     menuTrigger: {
-        color: '#cccccc',
+        color: textColorLight,
         fontSize: 30,
         width: 40,
         textAlign: 'center',
@@ -18,18 +22,15 @@ export default StyleSheet.create({
         paddingTop: 5,
         paddingBottom: 5,
         fontSize: 15,
-        color: '#555555',
-    },
-    container: {
-        backgroundColor: '#fff',
+        color: textColor,
     },
     content: {
-        backgroundColor: '#fff',
+        backgroundColor: backgroundColor,
         alignItems: 'center',
     },
     drinkNameInput: {
         fontSize: 40,
-        color: '#cccccc',
+        color: textColorLight,
         marginTop: 130,
         marginBottom: 50,
     },
@@ -37,7 +38,7 @@ export default StyleSheet.create({
         position: 'absolute',
         top: 50,
         fontSize: 30,
-        color: '#cccccc',
+        color: textColorLight,
     },
     counter: {
         textAlign: 'center',
@@ -48,11 +49,11 @@ export default StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
     },
-    button: {
-        backgroundColor: '#555555',
-        borderColor: '#555555',
+    buttonPlus: {
+        backgroundColor: textColor,
+        borderColor: textColor,
         borderWidth: 2,
-        color: 'white',
+        color: '#fff',
         width: 75,
         height: 75,
         padding: 4,
@@ -64,10 +65,10 @@ export default StyleSheet.create({
         textAlign: 'center',
     },
     buttonMinus: {
-        backgroundColor: 'white',
-        borderColor: '#555555',
+        backgroundColor: 'transparent',
+        borderColor: textColor,
         borderWidth: 2,
-        color: '#555555',
+        color: textColor,
         width: 75,
         height: 75,
         padding: 4,
@@ -79,8 +80,8 @@ export default StyleSheet.create({
         textAlign: 'center',
     },
     buttonClear: {
-        backgroundColor: 'white',
-        borderColor: '#555555',
+        backgroundColor: 'transparent',
+        borderColor: textColor,
         borderWidth: 2,
         width: 75,
         height: 75,
@@ -103,7 +104,7 @@ export default StyleSheet.create({
     },
     logItem: {
         fontSize: 15,
-        color: '#cccccc',
+        color: textColorLight,
         lineHeight: 21,
     },
     graph: {
@@ -119,6 +120,6 @@ export default StyleSheet.create({
     },
     lastSwipeText: {
         fontSize: 150,
-        color: '#cccccc'
+        color: textColorLight,
     }
 });

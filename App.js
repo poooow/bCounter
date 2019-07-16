@@ -28,6 +28,7 @@ class bCounter extends React.Component {
             persons: [],
             currentPerson: 0,
             advancedMode: 0,
+            nightMode: 0,
         };
 
         this.retrieveData();
@@ -229,7 +230,7 @@ class bCounter extends React.Component {
     /*
      * Toggle graph and log visibility
      */
-    toggleMode = () => {
+    toggleAdvancedMode = () => {
 
         let newState = !this.state.advancedMode;
 
@@ -238,12 +239,21 @@ class bCounter extends React.Component {
         });
     };
 
+    toggleNightMode = () => {
+
+        let newState = !this.state.nightMode;
+
+        this.setState({
+            nightMode: newState,
+        });
+    };
+
     /*
      * Nick Name generator
      */
-    static generateNickname(){
+    static generateNickname() {
         const nameFirst = ['anarchist', 'autocratic', 'feudal', 'communist', 'liberal', 'bureaucratic', 'religious', 'social', 'creative', 'technocratic', 'militant', 'imperial', 'capitalist', 'despotic', 'aristocratic', 'neutral', 'charismatic', 'technocratic', 'theocratic', 'conservative', 'marxist', 'enlightened', 'feminist', 'skeptical', 'utilitarian'];
-        const nameSecond = ['alligator', 'donkey', 'badger', 'beaver', 'bobkitten', 'capybara', 'chameleon', 'chicken', 'coyote', 'crocodile', 'unicorn', 'dinosaur', 'dragon', 'duck', 'elephant', 'fox', 'gecko', 'panda', 'giraffe', 'goat', 'gorilla', 'goose', 'hyena', 'jellyfish', 'kangaroo', 'koala', 'lizard', 'mammoth', 'monkey', 'mouse', 'octopus', 'parrot', 'penguin', 'pigeon', 'rabbit', 'skunk', 'squirrel', 'toad', 'whale', 'zebra'];
+        const nameSecond = ['alligator', 'donkey', 'badger', 'beaver', 'bobkitten', 'capybara', 'chameleon', 'chicken', 'coyote', 'crocodile', 'unicorn', 'dinosaur', 'dragon', 'duck', 'elephant', 'fox', 'gecko', 'panda', 'giraffe', 'goat', 'gorilla', 'goose', 'hyena', 'jellyfish', 'kangaroo', 'koala', 'lizard', 'mammoth', 'monkey', 'rat', 'octopus', 'parrot', 'penguin', 'pigeon', 'rabbit', 'skunk', 'squirrel', 'toad', 'whale', 'zebra'];
 
         return Utils.capitalizeFirstLetter(nameFirst[Utils.getRandomInt(0, nameFirst.length - 1)]) + ' ' + nameSecond[Utils.getRandomInt(0, nameSecond.length - 1)];
     }
@@ -252,35 +262,42 @@ class bCounter extends React.Component {
      * Single slide
      */
     personView(person) {
-        const fill = '#cccccc';
-
         return (
-            <View key={person} style={styles.container}>
-                <View style={styles.content}>
+            <View key={person}>
+                <View style={[styles.content, {backgroundColor: this.state.nightMode ? '#000' : '#fff'}]}>
                     {this.state.advancedMode ?
                         <TextInput
-                            style={styles.counterNameInput}
+                            style={[styles.counterNameInput, {color: this.state.nightMode ? '#666' : '#ccc'}]}
                             onChangeText={this.setCounterName}
                             value={this.state.persons[person].counterName}
                         />
-                    : null}
+                        : null}
                     <TextInput
-                        style={styles.drinkNameInput}
+                        style={[styles.drinkNameInput, {color: this.state.nightMode ? '#666' : '#ccc'}]}
                         onChangeText={this.setDrinkName}
                         value={this.state.persons[person].name}
                     />
                     <Text
-                        style={styles.counter}>{this.state.persons[person].count} {String.fromCodePoint(this.state.persons[person].icon)}</Text>
+                        style={[styles.counter, {color: this.state.nightMode ? '#fff' : '#000'}]}>{this.state.persons[person].count} {String.fromCodePoint(this.state.persons[person].icon)}</Text>
                     <View style={styles.buttons}>
                         <TouchableOpacity onPress={this.increment}>
-                            <Text style={styles.button}>+</Text>
+                            <Text style={[styles.buttonPlus,
+                                {color: this.state.nightMode ? '#000' : '#fff'},
+                                {backgroundColor: this.state.nightMode ? '#ccc' : '#555'},
+                                {borderColor: this.state.nightMode ? '#ccc' : '#555'},
+                            ]}>+</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={this.decrement}>
-                            <Text style={styles.buttonMinus}>-</Text>
+                            <Text style={[styles.buttonMinus,
+                                {color: this.state.nightMode ? '#fff' : '#000'},
+                                {borderColor: this.state.nightMode ? '#ccc' : '#555'},
+                            ]}>-</Text>
                         </TouchableOpacity>
                         <TouchableOpacity>
                             <Text
-                                style={styles.buttonClear}
+                                style={[styles.buttonClear,
+                                    {borderColor: this.state.nightMode ? '#ccc' : '#555'},
+                                ]}
                                 onPress={
                                     () => Alert.alert(
                                         "What!", "No more beers?",
@@ -301,7 +318,7 @@ class bCounter extends React.Component {
                             <ScrollView style={styles.log}>
                                 <Text>
                                     {this.state.persons[person].beers.map((beer, index) => (
-                                        <Text style={styles.logItem}
+                                        <Text style={[styles.logItem, {color: this.state.nightMode ? '#666' : '#ccc'}]}
                                               key={index}>{beer.name} @ {Utils.timestampToTime(beer.time)}{'\n'}</Text>
                                     ))}
                                 </Text>
@@ -309,7 +326,7 @@ class bCounter extends React.Component {
                             <BarChart
                                 style={styles.graph}
                                 data={this.state.persons[person].graph}
-                                svg={{fill}}
+                                svg={{fill: this.state.nightMode ? '#333' : '#ccc'}}
                                 yMin={0}
                             >
                                 <Grid/>
@@ -331,16 +348,17 @@ class bCounter extends React.Component {
 
         // Last slide with add-person button
         const lastSwipe = (<View key={999} style={styles.lastSwipe}><Text onPress={this.newPerson}
-                                                                          style={styles.lastSwipeText}>+</Text></View>);
+                                                                          style={[styles.lastSwipeText, {color: this.state.nightMode ? '#666' : '#ccc'}]}>+</Text></View>);
         personView.push(lastSwipe);
 
         return (
             <MenuProvider>
                 <Swiper
+                    containerStyle={{backgroundColor: this.state.nightMode ? '#000' : '#fff'}}
                     loop={false}
                     index={this.state.currentPerson}
                     dot={<View style={{
-                        backgroundColor: 'rgba(0,0,0,.1)',
+                        backgroundColor: this.state.nightMode ? '#222' : '#eee',
                         width: 8,
                         height: 8,
                         borderRadius: 4,
@@ -350,7 +368,7 @@ class bCounter extends React.Component {
                         marginBottom: 3,
                     }}/>}
                     activeDot={<View style={{
-                        backgroundColor: 'rgba(0,0,0,.3)',
+                        backgroundColor: this.state.nightMode ? '#444' : '#ccc',
                         width: 8,
                         height: 8,
                         borderRadius: 4,
@@ -366,15 +384,20 @@ class bCounter extends React.Component {
                 <View style={styles.menu}>
                     <Menu>
                         <MenuTrigger>
-                            <Text style={styles.menuTrigger}>&#x22EE;</Text>
+                            <Text
+                                style={[styles.menuTrigger, {color: this.state.nightMode ? '#666' : '#ccc'}]}>&#x22EE;</Text>
                         </MenuTrigger>
                         <MenuOptions>
                             <MenuOption
                                 onSelect={() => Linking.openURL('https://github.com/poooow/bCounter/blob/master/privacy_policy.md')}>
                                 <Text style={styles.menuItem}>Privacy policy</Text>
                             </MenuOption>
-                            <MenuOption onSelect={() => this.toggleMode()}>
-                                <Text style={styles.menuItem}>{this.state.advancedMode ? 'Disable' : 'Enable'} advanced
+                            <MenuOption onSelect={() => this.toggleAdvancedMode()}>
+                                <Text style={styles.menuItem}>{this.state.advancedMode ? 'Disable' : ''} Advanced
+                                    mode</Text>
+                            </MenuOption>
+                            <MenuOption onSelect={() => this.toggleNightMode()}>
+                                <Text style={styles.menuItem}>{this.state.nightMode ? 'Disable' : ''} Night
                                     mode</Text>
                             </MenuOption>
                             <MenuOption onSelect={() => this.deletePerson()}>
