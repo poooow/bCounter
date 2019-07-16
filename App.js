@@ -1,5 +1,15 @@
 import React from 'react';
-import {StyleSheet, Text, View, TextInput, Alert, ScrollView, TouchableOpacity, Linking, AsyncStorage} from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    TextInput,
+    Alert,
+    ScrollView,
+    TouchableOpacity,
+    Linking,
+    AsyncStorage
+} from 'react-native';
 import {BarChart, Grid} from 'react-native-svg-charts'
 import Swiper from 'react-native-swiper';
 import {MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger} from 'react-native-popup-menu';
@@ -11,13 +21,7 @@ class bCounter extends React.Component {
     constructor(props) {
         super(props);
 
-        this.emptyPerson = {
-            count: 0,
-            beers: [],
-            name: 'Beer',
-            icon: 0x1f37a,
-            graph: [0],
-        };
+        this.createPerson();
 
         this.state = {
             persons: [],
@@ -29,6 +33,17 @@ class bCounter extends React.Component {
         if (this.state.persons.length === 0) this.state.persons.push(this.emptyPerson);
         this.updateGraph();
         this.drinks = [['beer', 0x1f37a], ['wine', 0x1f377], ['cocktail', 0x1f378], ['shot', 0x1f943], ['coffee', 0x2615], ['milk', 0x1f95b]];
+    }
+
+    createPerson() {
+        this.emptyPerson = {
+            count: 0,
+            beers: [],
+            name: 'Beer',
+            icon: 0x1f37a,
+            graph: [0],
+            counterName: this.generateNickname(),
+        };
     }
 
     static timestampToTime(timestamp) {
@@ -97,6 +112,22 @@ class bCounter extends React.Component {
             [this.state.currentPerson]: {
                 name: {$set: drinkName},
                 icon: {$set: drinkIcon}
+            }
+        });
+
+        this.setState({
+            persons
+        })
+    };
+
+    /*
+     * Update counter name
+     */
+    setCounterName = (counterName) => {
+
+        const persons = update(this.state.persons, {
+            [this.state.currentPerson]: {
+                counterName: {$set: counterName},
             }
         });
 
@@ -181,6 +212,8 @@ class bCounter extends React.Component {
     };
 
     newPerson = () => {
+        this.createPerson();
+
         const persons = update(this.state.persons, {$push: [this.emptyPerson]});
 
         this.setState({
@@ -213,6 +246,25 @@ class bCounter extends React.Component {
     };
 
     /*
+     * Nick Name generator
+     */
+    capitalizeFirstLetter(string)
+    {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+
+    generateNickname(){
+        const nameFirst = ['anarchist', 'autocratic', 'democratic', 'feudal', 'communist', 'liberal', 'bureaucratic', 'religious', 'social', 'creative', 'technocratic', 'militant', 'imperial', 'capitalist', 'despotic', 'aristocratic', 'neutral', 'charismatic', 'technocratic', 'theocratic'];
+        const nameSecond = ['alligator', 'donkey', 'badger', 'beaver', 'bobkitten', 'capybara', 'chameleon', 'chicken', 'coyote', 'crocodile', 'unicorn', 'dinosaur', 'dragon', 'duck', 'elephant', 'fox', 'gecko', 'panda', 'giraffe', 'goat', 'gorilla', 'goose', 'hyena', 'jellyfish', 'kangaroo', 'koala', 'lizard', 'mammoth', 'monkey', 'mouse', 'octopus', 'parrot', 'penguin', 'pigeon', 'rabbit', 'skunk', 'squirrel', 'toad', 'whale', 'zebra'];
+
+        return this.capitalizeFirstLetter(nameFirst[this.getRandomInt(0, nameFirst.length - 1)]) + ' ' + nameSecond[this.getRandomInt(0, nameSecond.length - 1)];
+    }
+
+    /*
      * Single slide
      */
     personView(person) {
@@ -221,12 +273,20 @@ class bCounter extends React.Component {
         return (
             <View key={person} style={styles.container}>
                 <View style={styles.content}>
+                    {this.state.advancedMode ?
+                        <TextInput
+                            style={styles.counterNameInput}
+                            onChangeText={this.setCounterName}
+                            value={this.state.persons[person].counterName}
+                        />
+                    : null}
                     <TextInput
-                        style={styles.input}
+                        style={styles.drinkNameInput}
                         onChangeText={this.setDrinkName}
                         value={this.state.persons[person].name}
                     />
-                    <Text style={styles.counter}>{this.state.persons[person].count} {String.fromCodePoint(this.state.persons[person].icon)}</Text>
+                    <Text
+                        style={styles.counter}>{this.state.persons[person].count} {String.fromCodePoint(this.state.persons[person].icon)}</Text>
                     <View style={styles.buttons}>
                         <TouchableOpacity onPress={this.increment}>
                             <Text style={styles.button}>+</Text>
@@ -253,24 +313,25 @@ class bCounter extends React.Component {
                         </TouchableOpacity>
                     </View>
                     {this.state.advancedMode ?
-                    <View style={styles.stats}>
-                        <ScrollView style={styles.log}>
-                            <Text>
-                                {this.state.persons[person].beers.map((beer, index) => (
-                                    <Text style={styles.logItem} key={index}>{beer.name} @ {bCounter.timestampToTime(beer.time)}{'\n'}</Text>
-                                ))}
-                            </Text>
-                        </ScrollView>
-                        <BarChart
-                            style={styles.graph}
-                            data={this.state.persons[person].graph}
-                            svg={{fill}}
-                            yMin={0}
-                        >
-                            <Grid/>
-                        </BarChart>
-                    </View>
-                    : null}
+                        <View style={styles.stats}>
+                            <ScrollView style={styles.log}>
+                                <Text>
+                                    {this.state.persons[person].beers.map((beer, index) => (
+                                        <Text style={styles.logItem}
+                                              key={index}>{beer.name} @ {bCounter.timestampToTime(beer.time)}{'\n'}</Text>
+                                    ))}
+                                </Text>
+                            </ScrollView>
+                            <BarChart
+                                style={styles.graph}
+                                data={this.state.persons[person].graph}
+                                svg={{fill}}
+                                yMin={0}
+                            >
+                                <Grid/>
+                            </BarChart>
+                        </View>
+                        : null}
                 </View>
             </View>
         );
@@ -285,7 +346,8 @@ class bCounter extends React.Component {
         }
 
         // Last slide with add-person button
-        const lastSwipe = (<View key={999} style={styles.lastSwipe}><Text onPress={this.newPerson} style={styles.lastSwipeText}>+</Text></View>);
+        const lastSwipe = (<View key={999} style={styles.lastSwipe}><Text onPress={this.newPerson}
+                                                                          style={styles.lastSwipeText}>+</Text></View>);
         personView.push(lastSwipe);
 
         return (
@@ -293,8 +355,26 @@ class bCounter extends React.Component {
                 <Swiper
                     loop={false}
                     index={this.state.currentPerson}
-                    dot={<View style={{backgroundColor: 'rgba(0,0,0,.1)', width: 8, height: 8, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 3, marginBottom: 3,}}/>}
-                    activeDot={<View style={{backgroundColor: 'rgba(0,0,0,.3)', width: 8, height: 8, borderRadius: 4, marginLeft: 3, marginRight: 3, marginTop: 3, marginBottom: 3,}}/>}
+                    dot={<View style={{
+                        backgroundColor: 'rgba(0,0,0,.1)',
+                        width: 8,
+                        height: 8,
+                        borderRadius: 4,
+                        marginLeft: 3,
+                        marginRight: 3,
+                        marginTop: 3,
+                        marginBottom: 3,
+                    }}/>}
+                    activeDot={<View style={{
+                        backgroundColor: 'rgba(0,0,0,.3)',
+                        width: 8,
+                        height: 8,
+                        borderRadius: 4,
+                        marginLeft: 3,
+                        marginRight: 3,
+                        marginTop: 3,
+                        marginBottom: 3,
+                    }}/>}
                     onIndexChanged={(index) => this.setCurrentPerson(index)}
                 >
                     {personView}
@@ -305,11 +385,13 @@ class bCounter extends React.Component {
                             <Text style={styles.menuTrigger}>&#x22EE;</Text>
                         </MenuTrigger>
                         <MenuOptions>
-                            <MenuOption onSelect={() => Linking.openURL('https://github.com/poooow/bCounter/blob/master/privacy_policy.md')}>
+                            <MenuOption
+                                onSelect={() => Linking.openURL('https://github.com/poooow/bCounter/blob/master/privacy_policy.md')}>
                                 <Text style={styles.menuItem}>Privacy policy</Text>
                             </MenuOption>
                             <MenuOption onSelect={() => this.toggleMode()}>
-                                <Text style={styles.menuItem}>{this.state.advancedMode ? 'Disable' : 'Enable'} advanced mode</Text>
+                                <Text style={styles.menuItem}>{this.state.advancedMode ? 'Disable' : 'Enable'} advanced
+                                    mode</Text>
                             </MenuOption>
                             <MenuOption onSelect={() => this.deletePerson()}>
                                 <Text style={styles.menuItem}>Delete counter</Text>
@@ -349,11 +431,17 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         alignItems: 'center',
     },
-    input: {
+    drinkNameInput: {
         fontSize: 40,
         color: '#cccccc',
         marginTop: 130,
         marginBottom: 50,
+    },
+    counterNameInput: {
+        position: 'absolute',
+        top: 50,
+        fontSize: 30,
+        color: '#cccccc',
     },
     counter: {
         textAlign: 'center',
