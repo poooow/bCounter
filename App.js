@@ -400,9 +400,11 @@ class bCounter extends React.Component {
                                 <Text style={styles.menuItem}>{this.state.nightMode ? 'Disable' : ''} Night
                                     mode</Text>
                             </MenuOption>
-                            <MenuOption onSelect={() => this.deletePerson()}>
-                                <Text style={styles.menuItem}>Delete counter</Text>
-                            </MenuOption>
+                            {this.state.currentPerson !== this.state.persons.length ?
+                                <MenuOption onSelect={() => this.deletePerson()}>
+                                    <Text style={styles.menuItem}>Delete counter</Text>
+                                </MenuOption>
+                            : null}
                         </MenuOptions>
                     </Menu>
                 </View>
