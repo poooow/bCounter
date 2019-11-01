@@ -7,9 +7,10 @@ import {
     ScrollView,
     TouchableOpacity,
     Linking,
-    AsyncStorage
+    AsyncStorage,
+    StatusBar
 } from 'react-native';
-import {BarChart, Grid} from 'react-native-svg-charts'
+import {YAxis, BarChart, Grid} from 'react-native-svg-charts'
 import Swiper from 'react-native-swiper';
 import {MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger} from 'react-native-popup-menu';
 import update from 'immutability-helper';
@@ -262,6 +263,10 @@ class bCounter extends React.Component {
      * Single slide
      */
     personView(person) {
+
+        StatusBar.setBackgroundColor(this.state.nightMode ? '#000' : '#fff', true);
+        StatusBar.setBarStyle(this.state.nightMode ? 'light-content' : 'dark-content');
+
         return (
             <View key={person}>
                 <View style={[styles.content, {backgroundColor: this.state.nightMode ? '#000' : '#fff'}]}>
@@ -283,20 +288,20 @@ class bCounter extends React.Component {
                         <TouchableOpacity onPress={this.increment}>
                             <Text style={[styles.buttonPlus,
                                 {color: this.state.nightMode ? '#000' : '#fff'},
-                                {backgroundColor: this.state.nightMode ? '#ccc' : '#555'},
-                                {borderColor: this.state.nightMode ? '#ccc' : '#555'},
+                                {backgroundColor: this.state.nightMode ? '#fff' : '#555'},
+                                {borderColor: this.state.nightMode ? '#fff' : '#555'},
                             ]}>+</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={this.decrement}>
                             <Text style={[styles.buttonMinus,
                                 {color: this.state.nightMode ? '#fff' : '#000'},
-                                {borderColor: this.state.nightMode ? '#ccc' : '#555'},
+                                {borderColor: this.state.nightMode ? '#fff' : '#555'},
                             ]}>-</Text>
                         </TouchableOpacity>
                         <TouchableOpacity>
                             <Text
                                 style={[styles.buttonClear,
-                                    {borderColor: this.state.nightMode ? '#ccc' : '#555'},
+                                    {borderColor: this.state.nightMode ? '#fff' : '#555'},
                                 ]}
                                 onPress={
                                     () => Alert.alert(
@@ -323,6 +328,16 @@ class bCounter extends React.Component {
                                     ))}
                                 </Text>
                             </ScrollView>
+                            <YAxis
+                                data={ this.state.persons[person].graph }
+                                contentInset={{ top: 10, bottom: 10 }}
+                                svg={{
+                                  fill: 'grey',
+                                  fontSize: 10,
+                                }}
+                                numberOfTicks={ 5 }
+                                formatLabel={ value => `${Math.round(value/1000/60)} min` }
+                            />
                             <BarChart
                                 style={styles.graph}
                                 data={this.state.persons[person].graph}
@@ -393,12 +408,10 @@ class bCounter extends React.Component {
                                 <Text style={styles.menuItem}>Privacy policy</Text>
                             </MenuOption>
                             <MenuOption onSelect={() => this.toggleAdvancedMode()}>
-                                <Text style={styles.menuItem}>{this.state.advancedMode ? 'Disable' : ''} Advanced
-                                    mode</Text>
+                                <Text style={styles.menuItem}>{this.state.advancedMode ? 'Disable' : ''}Advanced mode</Text>
                             </MenuOption>
                             <MenuOption onSelect={() => this.toggleNightMode()}>
-                                <Text style={styles.menuItem}>{this.state.nightMode ? 'Disable' : ''} Night
-                                    mode</Text>
+                                <Text style={styles.menuItem}>{this.state.nightMode ? 'Disable' : ''}Night mode</Text>
                             </MenuOption>
                             {this.state.currentPerson !== this.state.persons.length ?
                                 <MenuOption onSelect={() => this.deletePerson()}>
