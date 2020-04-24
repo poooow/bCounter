@@ -10,9 +10,9 @@ import {
     AsyncStorage,
     StatusBar
 } from 'react-native';
-import {YAxis, BarChart, Grid} from 'react-native-svg-charts'
+import { YAxis, BarChart, Grid } from 'react-native-svg-charts'
 import Swiper from 'react-native-swiper';
-import {MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger} from 'react-native-popup-menu';
+import { MenuProvider, Menu, MenuOptions, MenuOption, MenuTrigger } from 'react-native-popup-menu';
 import update from 'immutability-helper';
 import styles from './styles.js';
 import * as Utils from './helpers.js';
@@ -59,14 +59,14 @@ class bCounter extends React.Component {
 
         const persons = update(this.state.persons, {
             [this.state.currentPerson]: {
-                graph: {$set: graph},
+                graph: { $set: graph },
             }
         });
 
         if (graph.length) {
             this.setState({
-                    persons: persons,
-                }
+                persons: persons,
+            }
             );
         }
     };
@@ -105,8 +105,8 @@ class bCounter extends React.Component {
 
         const persons = update(this.state.persons, {
             [this.state.currentPerson]: {
-                name: {$set: drinkName},
-                icon: {$set: drinkIcon}
+                name: { $set: drinkName },
+                icon: { $set: drinkIcon }
             }
         });
 
@@ -122,7 +122,7 @@ class bCounter extends React.Component {
 
         const persons = update(this.state.persons, {
             [this.state.currentPerson]: {
-                counterName: {$set: counterName},
+                counterName: { $set: counterName },
             }
         });
 
@@ -139,12 +139,12 @@ class bCounter extends React.Component {
 
         const name = String.fromCodePoint(this.state.persons[this.state.currentPerson].icon) + ' ' + this.state.persons[this.state.currentPerson].name;
 
-        const newBeerState = {'name': name, 'time': currentTime};
+        const newBeerState = { 'name': name, 'time': currentTime };
 
         const persons = update(this.state.persons, {
             [this.state.currentPerson]: {
-                count: {$set: this.state.persons[this.state.currentPerson].count + 1},
-                beers: {$push: [newBeerState]},
+                count: { $set: this.state.persons[this.state.currentPerson].count + 1 },
+                beers: { $push: [newBeerState] },
             }
         });
 
@@ -169,8 +169,8 @@ class bCounter extends React.Component {
 
         const persons = update(this.state.persons, {
             [this.state.currentPerson]: {
-                count: {$set: this.state.persons[this.state.currentPerson].count - 1},
-                beers: {$set: this.state.persons[this.state.currentPerson].beers}
+                count: { $set: this.state.persons[this.state.currentPerson].count - 1 },
+                beers: { $set: this.state.persons[this.state.currentPerson].beers }
             }
         });
 
@@ -188,9 +188,9 @@ class bCounter extends React.Component {
     clear = () => {
         const persons = update(this.state.persons, {
             [this.state.currentPerson]: {
-                count: {$set: 0},
-                beers: {$set: []},
-                graph: {$set: [0]}
+                count: { $set: 0 },
+                beers: { $set: [] },
+                graph: { $set: [0] }
             }
         });
 
@@ -209,7 +209,7 @@ class bCounter extends React.Component {
     newPerson = () => {
         this.createPerson();
 
-        const persons = update(this.state.persons, {$push: [this.emptyPerson]});
+        const persons = update(this.state.persons, { $push: [this.emptyPerson] });
 
         this.setState({
             persons: persons,
@@ -269,39 +269,42 @@ class bCounter extends React.Component {
 
         return (
             <View key={person}>
-                <View style={[styles.content, {backgroundColor: this.state.nightMode ? '#000' : '#fff'}]}>
+                <View style={[styles.content, { backgroundColor: this.state.nightMode ? '#000' : '#fff' }]}>
                     {this.state.advancedMode ?
+                    <View style={styles.counterName}>
                         <TextInput
-                            style={[styles.counterNameInput, {color: this.state.nightMode ? '#666' : '#ccc'}]}
+                            style={[styles.counterNameInput, { color: this.state.nightMode ? '#666' : '#ccc' }]}
                             onChangeText={this.setCounterName}
                             value={this.state.persons[person].counterName}
                         />
+                        </View>
                         : null}
                     <TextInput
-                        style={[styles.drinkNameInput, {color: this.state.nightMode ? '#666' : '#ccc'}]}
+                        style={[styles.drinkNameInput, { color: this.state.nightMode ? '#666' : '#ccc', marginTop: this.state.advancedMode ? 0 : '20%' }]}
                         onChangeText={this.setDrinkName}
                         value={this.state.persons[person].name}
                     />
                     <Text
-                        style={[styles.counter, {color: this.state.nightMode ? '#fff' : '#000'}]}>{this.state.persons[person].count} {String.fromCodePoint(this.state.persons[person].icon)}</Text>
-                    <View style={styles.buttons}>
+                        style={[styles.counter, { color: this.state.nightMode ? '#fff' : '#000' }]}>{this.state.persons[person].count} {String.fromCodePoint(this.state.persons[person].icon)}
+                    </Text>
+                    <View style={[styles.buttons, {height: this.state.advancedMode ? 84 : '30%' }]}>
                         <TouchableOpacity onPress={this.increment}>
                             <Text style={[styles.buttonPlus,
-                                {color: this.state.nightMode ? '#000' : '#fff'},
-                                {backgroundColor: this.state.nightMode ? '#fff' : '#555'},
-                                {borderColor: this.state.nightMode ? '#fff' : '#555'},
+                            { color: this.state.nightMode ? '#000' : '#fff' },
+                            { backgroundColor: this.state.nightMode ? '#fff' : '#555' },
+                            { borderColor: this.state.nightMode ? '#fff' : '#555' },
                             ]}>+</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={this.decrement}>
                             <Text style={[styles.buttonMinus,
-                                {color: this.state.nightMode ? '#fff' : '#000'},
-                                {borderColor: this.state.nightMode ? '#fff' : '#555'},
+                            { color: this.state.nightMode ? '#fff' : '#000' },
+                            { borderColor: this.state.nightMode ? '#fff' : '#555' },
                             ]}>-</Text>
                         </TouchableOpacity>
                         <TouchableOpacity>
                             <Text
                                 style={[styles.buttonClear,
-                                    {borderColor: this.state.nightMode ? '#fff' : '#555'},
+                                { borderColor: this.state.nightMode ? '#fff' : '#555' },
                                 ]}
                                 onPress={
                                     () => Alert.alert(
@@ -311,40 +314,40 @@ class bCounter extends React.Component {
                                                 text: 'Cancel',
                                                 style: 'cancel'
                                             },
-                                            {text: 'Clear', onPress: this.clear},
+                                            { text: 'Clear', onPress: this.clear },
                                         ],
-                                        {cancelable: true}
+                                        { cancelable: true }
                                     )}
                             >&#x1F5D1;</Text>
-                        </TouchableOpacity>
+                                    </TouchableOpacity>
                     </View>
                     {this.state.advancedMode ?
                         <View style={styles.stats}>
-                            <ScrollView style={styles.log}>
+                            <ScrollView>
                                 <Text>
                                     {this.state.persons[person].beers.map((beer, index) => (
-                                        <Text style={[styles.logItem, {color: this.state.nightMode ? '#666' : '#ccc'}]}
-                                              key={index}>{beer.name} @ {Utils.timestampToTime(beer.time)}{'\n'}</Text>
+                                        <Text style={[styles.logItem, { color: this.state.nightMode ? '#666' : '#ccc' }]}
+                                            key={index}>{beer.name} @ {Utils.timestampToTime(beer.time)}{'\n'}</Text>
                                     ))}
                                 </Text>
                             </ScrollView>
                             <YAxis
-                                data={ this.state.persons[person].graph }
+                                data={this.state.persons[person].graph}
                                 contentInset={{ top: 10, bottom: 10 }}
                                 svg={{
-                                  fill: 'grey',
-                                  fontSize: 10,
+                                    fill: 'grey',
+                                    fontSize: 10,
                                 }}
-                                numberOfTicks={ 5 }
-                                formatLabel={ value => `${Math.round(value/1000/60)} min` }
+                                numberOfTicks={5}
+                                formatLabel={value => `${Math.round(value / 1000 / 60)} min`}
                             />
                             <BarChart
                                 style={styles.graph}
                                 data={this.state.persons[person].graph}
-                                svg={{fill: this.state.nightMode ? '#333' : '#ccc'}}
+                                svg={{ fill: this.state.nightMode ? '#333' : '#ccc' }}
                                 yMin={0}
                             >
-                                <Grid/>
+                                <Grid />
                             </BarChart>
                         </View>
                         : null}
@@ -363,13 +366,13 @@ class bCounter extends React.Component {
 
         // Last slide with add-person button
         const lastSwipe = (<View key={999} style={styles.lastSwipe}><Text onPress={this.newPerson}
-                                                                          style={[styles.lastSwipeText, {color: this.state.nightMode ? '#666' : '#ccc'}]}>+</Text></View>);
+            style={[styles.lastSwipeText, { color: this.state.nightMode ? '#666' : '#ccc' }]}>+</Text></View>);
         personView.push(lastSwipe);
 
         return (
             <MenuProvider>
                 <Swiper
-                    containerStyle={{backgroundColor: this.state.nightMode ? '#000' : '#fff'}}
+                    containerStyle={{ backgroundColor: this.state.nightMode ? '#000' : '#fff' }}
                     loop={false}
                     index={this.state.currentPerson}
                     dot={<View style={{
@@ -381,7 +384,7 @@ class bCounter extends React.Component {
                         marginRight: 3,
                         marginTop: 3,
                         marginBottom: 3,
-                    }}/>}
+                    }} />}
                     activeDot={<View style={{
                         backgroundColor: this.state.nightMode ? '#444' : '#ccc',
                         width: 8,
@@ -391,7 +394,7 @@ class bCounter extends React.Component {
                         marginRight: 3,
                         marginTop: 3,
                         marginBottom: 3,
-                    }}/>}
+                    }} />}
                     onIndexChanged={(index) => this.setCurrentPerson(index)}
                 >
                     {personView}
@@ -400,7 +403,7 @@ class bCounter extends React.Component {
                     <Menu>
                         <MenuTrigger>
                             <Text
-                                style={[styles.menuTrigger, {color: this.state.nightMode ? '#666' : '#ccc'}]}>&#x22EE;</Text>
+                                style={[styles.menuTrigger, { color: this.state.nightMode ? '#666' : '#ccc' }]}>&#x22EE;</Text>
                         </MenuTrigger>
                         <MenuOptions>
                             <MenuOption
@@ -408,16 +411,16 @@ class bCounter extends React.Component {
                                 <Text style={styles.menuItem}>Privacy policy</Text>
                             </MenuOption>
                             <MenuOption onSelect={() => this.toggleAdvancedMode()}>
-                                <Text style={styles.menuItem}>{this.state.advancedMode ? 'Disable' : ''}Advanced mode</Text>
+                                <Text style={styles.menuItem}>{this.state.advancedMode ? 'Disable ' : ''}Advanced mode</Text>
                             </MenuOption>
                             <MenuOption onSelect={() => this.toggleNightMode()}>
-                                <Text style={styles.menuItem}>{this.state.nightMode ? 'Disable' : ''}Night mode</Text>
+                                <Text style={styles.menuItem}>{this.state.nightMode ? 'Disable ' : ''}Night mode</Text>
                             </MenuOption>
                             {this.state.currentPerson !== this.state.persons.length ?
                                 <MenuOption onSelect={() => this.deletePerson()}>
                                     <Text style={styles.menuItem}>Delete counter</Text>
                                 </MenuOption>
-                            : null}
+                                : null}
                         </MenuOptions>
                     </Menu>
                 </View>

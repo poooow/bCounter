@@ -1,4 +1,6 @@
 import {StyleSheet} from "react-native";
+import Constants from 'expo-constants';
+import { Dimensions } from 'react-native';
 
 const textColor = '#555555';
 const textColorLight = '#cccccc';
@@ -8,7 +10,7 @@ export default StyleSheet.create({
     menu: {
         position: 'absolute',
         right: 10,
-        top: 10,
+        top: Constants.statusBarHeight + 10,
     },
     menuTrigger: {
         color: textColorLight,
@@ -25,29 +27,30 @@ export default StyleSheet.create({
         color: textColor,
     },
     content: {
+        marginTop: Constants.statusBarHeight + 40,
         backgroundColor: backgroundColor,
         alignItems: 'center',
+        justifyContent: 'space-between',
+        height: Dimensions.get('window').height - Constants.statusBarHeight - 90,
     },
     drinkNameInput: {
         fontSize: 40,
         color: textColorLight,
-        marginTop: 130,
-        marginBottom: 50,
+    },
+    counterName: {
+        height: 35,
     },
     counterNameInput: {
-        position: 'absolute',
-        top: 50,
         fontSize: 30,
         color: textColorLight,
     },
     counter: {
         textAlign: 'center',
         fontSize: 80,
-        marginBottom: 60,
     },
     buttons: {
         flexDirection: 'row',
-        justifyContent: 'center',
+        height: 84,
     },
     buttonPlus: {
         backgroundColor: textColor,
@@ -78,6 +81,7 @@ export default StyleSheet.create({
         fontWeight: 'bold',
         overflow: 'hidden',
         textAlign: 'center',
+        zIndex: 99
     },
     buttonClear: {
         backgroundColor: 'transparent',
@@ -94,12 +98,9 @@ export default StyleSheet.create({
         textAlign: 'center',
     },
     stats: {
-        marginTop: 50,
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '90%',
-    },
-    log: {
         height: 130,
     },
     logItem: {
@@ -116,7 +117,6 @@ export default StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         flex: 1,
-
     },
     lastSwipeText: {
         fontSize: 150,

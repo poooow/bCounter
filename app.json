@@ -3,13 +3,12 @@
     "name": "Simple Beer Counter",
     "slug": "bCounter",
     "privacy": "public",
-    "sdkVersion": "33.0.0",
     "platforms": [
       "ios",
       "android",
       "web"
     ],
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -34,7 +33,7 @@
     "primaryColor": "#cccccc",
     "android": {
       "package": "com.pow.bcounter",
-      "versionCode": 7,
+      "versionCode": 8,
       "permissions": [],
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon-fg.png",
