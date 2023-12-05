@@ -1,0 +1,1 @@
+I have been told by Google Play Developer Support to to declare the permission REQUEST_INSTALL_PACKAGES first in order to update newer versions. New version doesn't require REQUEST_INSTALL_PACKAGES permission.
