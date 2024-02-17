@@ -13,7 +13,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "bCounter2";
+    return "com.pow.bcounter";
   }
 
   /**

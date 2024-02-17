@@ -1,6 +1,6 @@
 {
-  "name": "Simple beer counter",
-  "version": "0.1.0",
+  "name": "bCounter2",
+  "version": "0.1.11",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
